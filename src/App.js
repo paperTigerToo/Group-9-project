@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import * as d3 from "d3";
+import csvFile from "./data.csv"
+import TestChart from "./testchart.js"
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+
+  state = { csvData: [] };
+
+  componentDidMount() {
+    d3.csv(csvFile).then(data => {
+      console.log("Loaded CSV:", data);
+      this.setState({ csvData: data });
+    });
+  }
+  render() {
+    return (
+    <>
+      <h1>Hello World</h1>
+      <div>
+        <TestChart csvData={this.state.csvData} />
+      </div>
+    </>
+    )
+  }
+
 }
 
 export default App;
