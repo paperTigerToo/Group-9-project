@@ -19,7 +19,7 @@ class App extends Component {
     <>
       <h1>Hello World</h1>
       <div>
-        <TestChart csvData={this.state.csvData} />
+        <TestChart csvData={this.state.csvData} width={600} height={400} />
       </div>
     </>
     )
