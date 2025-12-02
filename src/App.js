@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import * as d3 from "d3";
 import csvFile from "./data.csv"
 import TestChart from "./testchart.js"
-
+//import files that you are working on and call them in the return
+// use the csvData and pass it into your files
 class App extends Component {
 
   state = { csvData: [] };
