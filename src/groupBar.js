@@ -26,6 +26,8 @@ class groupBar extends Component{
         const innerWidth = width - margin.left - margin.right,
         innerHeight = height - margin.top - margin.bottom;
         const id =this.props.id;
+
+        const svg = d3.select(`#${id}`);
     }
     render() {
         return <svg id={this.props.id} width={this.props.width} height={this.props.height}><g></g></svg>;

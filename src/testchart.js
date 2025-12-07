@@ -30,7 +30,7 @@ class testchart extends Component {
             sex: +d.sex
         }))
         );
-    const svg = d3.select(id);
+    const svg = d3.select(`#${id}`);
     svg.selectAll("*").remove();
     svg.attr("transform", `translate(${margin.left},${margin.top})`);
     const xScale = d3.scaleLinear().domain([0,d3.max(chartData, d => +d.age)]).range([0, innerWidth]);
