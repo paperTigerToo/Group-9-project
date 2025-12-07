@@ -10,7 +10,7 @@ class testchart extends Component {
         return;
     }
     this.renderChart();
-}
+    }
     componentDidMount() {
         this.renderChart();
     }
