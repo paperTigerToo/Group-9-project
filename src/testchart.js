@@ -10,7 +10,7 @@ class testchart extends Component {
         return;
     }
     this.renderChart();
-}
+    }
     componentDidMount() {
         this.renderChart();
     }
@@ -18,9 +18,9 @@ class testchart extends Component {
         const chartData = this.props.csvData;
         if (!chartData || chartData.length === 0) return;
         const margin = { top: 20, right: 30, bottom: 40, left: 40 };
-      const width = this.props.width;
-    const height = this.props.height;
-
+        const width = this.props.width;
+        const height = this.props.height;
+        const id =this.props.id;
       const innerWidth = width - margin.left - margin.right,
       innerHeight = height - margin.top - margin.bottom;
     console.log(
@@ -30,7 +30,7 @@ class testchart extends Component {
             sex: +d.sex
         }))
         );
-    const svg = d3.select('#mysvg g');
+    const svg = d3.select(`#${id}`);
     svg.selectAll("*").remove();
     svg.attr("transform", `translate(${margin.left},${margin.top})`);
     const xScale = d3.scaleLinear().domain([0,d3.max(chartData, d => +d.age)]).range([0, innerWidth]);
@@ -55,7 +55,7 @@ class testchart extends Component {
     }
     
 render() {
-    return <svg id="mysvg" width={this.props.width} height={this.props.height}><g></g></svg>;
+    return <svg id={this.props.id} width={this.props.width} height={this.props.height}><g></g></svg>;
   }
 }
 

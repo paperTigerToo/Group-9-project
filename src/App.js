@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import * as d3 from "d3";
 import csvFile from "./data.csv"
 import TestChart from "./testchart.js"
+import GroupBar from './groupBar'
 //import files that you are working on and call them in the return
 // use the csvData and pass it into your files
 class App extends Component {
@@ -18,8 +19,9 @@ class App extends Component {
     return (
     <>
       <h1>Hello World</h1>
-      <div>
-        <TestChart csvData={this.state.csvData} width={600} height={400} />
+      <div className="chart-container">
+        <TestChart id="testchart" csvData={this.state.csvData} width={600} height={400} />
+        <GroupBar id='groupbar' csvData={this.state.csvData} width={700} height={600}  />
       </div>
     </>
     )
