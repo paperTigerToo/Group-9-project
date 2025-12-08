@@ -6,6 +6,7 @@ import TestChart from "./testchart.js"
 import GroupBar from './groupBar'
 import TestBar from "./testbar.js"
 import StackChart from "./stackchart.js"
+import PieChart1 from "./pieChart.js"
 //import files that you are working on and call them in the return
 // use the csvData and pass it into your files
 class App extends Component {
@@ -31,6 +32,7 @@ class App extends Component {
         <TestBar id="testchart" csvData={this.state.csvNewData} width={800} height={600} />
         <GroupBar id='groupbar' csvData={this.state.csvData} width={700} height={600}  />
         <StackChart id='stackChart' csvData={this.state.csvNewData} width={700} height={600} />
+        <PieChart1 id='pieChart' csvData={this.state.csvNewData} width={700} height={600} />
       </div>
     </>
     )
