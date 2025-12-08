@@ -105,14 +105,26 @@ class groupBar extends Component{
             .attr("transform", `translate(${margin.left},0)`)
             .call(d3.axisLeft(y).ticks(null, "s"))
             .call(g => g.selectAll(".domain").remove());
-
+        svg.append("text")
+            .attr("class", "y-axis-title")
+            .attr("x", - (margin.top + innerHeight / 2))
+            .attr("y", 15)
+            .attr("transform", "rotate(-90)")
+            .attr("text-anchor", "middle")
+            .text("Average resting blood pressure");
+        svg.append("text")
+            .attr("class", "x-axis-title")
+            .attr("x", margin.left + innerWidth / 2)  
+            .attr("y", height - 5)
+            .attr("text-anchor", "middle")
+            .text("heart disease severity");
         const legend = svg.append("g")
             .attr("class", "legend")
             .attr("transform", `translate(${margin.left + 50}, ${margin.top})`);
         legend.selectAll("g")
             .data(ageLabels)
             .join("g")
-            .attr("transform", (d, i) => `translate(${i * 70}, 0)`) // stack vertically
+            .attr("transform", (d, i) => `translate(${i * 70}, 0)`)
             .call(g => {
                 // Add colored rectangle
                 g.append("rect")
