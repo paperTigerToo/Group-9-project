@@ -95,7 +95,7 @@ class stackchart extends Component{
                 .attr("y", 10)
                 .attr("fill", "currentColor")
                 .attr("text-anchor", "start")
-                .text("↑ Unemployed persons"));
+                .text("payment method"));
             
         const legend = svg.append("g")
             .attr("class", "legend")
