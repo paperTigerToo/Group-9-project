@@ -5,6 +5,7 @@ import csvNewFile from "./shopping_behavior_updated.csv"
 import TestChart from "./testchart.js"
 import GroupBar from './groupBar'
 import TestBar from "./testbar.js"
+import StackChart from "./stackchart.js"
 //import files that you are working on and call them in the return
 // use the csvData and pass it into your files
 class App extends Component {
@@ -29,6 +30,7 @@ class App extends Component {
       <div className="chart-container">
         <TestBar id="testchart" csvData={this.state.csvNewData} width={800} height={600} />
         <GroupBar id='groupbar' csvData={this.state.csvData} width={700} height={600}  />
+        <StackChart id='stackChart' csvData={this.state.csvNewData} width={700} height={600} />
       </div>
     </>
     )
