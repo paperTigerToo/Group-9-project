@@ -18,7 +18,7 @@ class stackchart extends Component{
         const chartData = this.props.csvData;
         if (!chartData || chartData.length === 0) return;
 
-        const margin = { top: 50, right: 30, bottom: 40, left: 40 };
+        const margin = { top: 50, right: 100, bottom: 40, left: 40 };
         const width = this.props.width;
         const height = this.props.height;
         const innerWidth = width - margin.left - margin.right,
@@ -36,6 +36,7 @@ class stackchart extends Component{
 
         const series = d3.stack()
             .offset(d3.stackOffsetExpand)
+            .order(d3.stackOrderDescending) 
             .keys(paymentKeys)
             .value(([, D], key) => D.get(key) ?? 0)
             (grouped);
@@ -54,6 +55,7 @@ class stackchart extends Component{
             .domain(series.map(d => d.key))
             .range(d3.schemeTableau10);
         const area = d3.area()
+            .curve(d3.curveCatmullRom)
             .x(d => x(d.data[0]) + x.bandwidth() / 2)
             .y0(d => y(d[0]))
             .y1(d => y(d[1]));
@@ -97,7 +99,7 @@ class stackchart extends Component{
             
         const legend = svg.append("g")
             .attr("class", "legend")
-            .attr("transform", `translate(${width - margin.right -50}, ${margin.top})`);
+            .attr("transform", `translate(${width - margin.right }, ${margin.top})`);
         legend.selectAll("g")
             .data(paymentKeys)
             .join("g")
