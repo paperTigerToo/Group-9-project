@@ -6,7 +6,7 @@ class testbar extends Component{
 
     componentDidUpdate(){
     const chartData = this.props.csvData;
-    console.log("Rendering chart with data: stuff");
+    console.log("Rendering chart with data: this good");
     // Don't render if data is empty
     if (!chartData || chartData.length === 0) {
         return;
@@ -27,8 +27,8 @@ class testbar extends Component{
         innerHeight = height - margin.top - margin.bottom;
         const id =this.props.id;
         const bins = d3.bin()
-            .domain(d3.extent(chartData, d => +d.age))
-            .thresholds(d3.range(18, 70, 7))
+            .domain(d3.extent(chartData, d => +d.Age))
+            .thresholds(d3.range(18, 71, 7))
             (chartData.map(d => +d.Age));
         function ageToRange(age) {
             const b = bins.find(bin => age >= bin.x0 && age < bin.x1);
@@ -37,7 +37,7 @@ class testbar extends Component{
         
         const processedData = chartData.map(d => ({
             ...d,
-            ageRange: ageToRange(+d.age)
+            ageRange: ageToRange(+d.Age)
             })).filter(d => d.ageRange !== "Unknown");
         const uniqueValues = new Set(chartData.map(d => d["Payment Method"]));
         console.log([...uniqueValues]);
@@ -50,8 +50,8 @@ class testbar extends Component{
 
         d3.rollup(
             processedData,
-            v => d3.mean(v, d => +d.trestbps),
-            d => d.num,
+            v => d3.mean(v, d => +d["Purchase Amount (USD)"]),
+            d => d["Payment Method"],
             d => d.ageRange
             ).forEach((ageMap, num) => {
                 ageMap.forEach((avg, ageRange) => {
@@ -61,7 +61,7 @@ class testbar extends Component{
 
         console.log(averageMap);
          const fx = d3.scaleBand()
-            .domain(numLabels)
+            .domain(uniqueValues)
             .rangeRound([margin.left, width - margin.right])
             .paddingInner(0.1);
         const x = d3.scaleBand()
@@ -86,16 +86,16 @@ class testbar extends Component{
             .attr("height", height);
         svg.append("g")
             .selectAll()
-            .data(d3.group(processedData, d => d.num))
+            .data(d3.group(processedData, d => d["Payment Method"]))
             .join("g")
             .attr("transform", ([num]) => `translate(${fx(num)},0)`)
             .selectAll()
             .data(([, d]) => d)
             .join("rect")
             .attr("x", d => x(d.ageRange))
-            .attr("y", d => y(averageMap.get(`${d.num}-${d.ageRange}`) ?? 0))
+            .attr("y", d => y(averageMap.get(`${d["Payment Method"]}-${d.ageRange}`) ?? 0))
             .attr("width", x.bandwidth())
-            .attr("height", d => y(0) - y(averageMap.get(`${d.num}-${d.ageRange}`) ?? 0))
+            .attr("height", d => y(0) - y(averageMap.get(`${d["Payment Method"]}-${d.ageRange}`) ?? 0))
             .attr("fill", d => color(d.ageRange));
         svg.append("g")
             .attr("transform", `translate(0,${height - margin.bottom})`)
@@ -148,4 +148,4 @@ class testbar extends Component{
     
 
 }
-export default testBar;
+export default testbar;

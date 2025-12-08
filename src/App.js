@@ -9,8 +9,8 @@ import TestBar from "./testbar.js"
 // use the csvData and pass it into your files
 class App extends Component {
 
-  state = { csvData: [] };
-  state = { csvNewData: [] };
+  state = { csvData: [], 
+  csvNewData: [] };
 
   componentDidMount() {
     d3.csv(csvFile).then(data => {
@@ -18,7 +18,7 @@ class App extends Component {
       this.setState({ csvData: data });
     });
     d3.csv(csvNewFile).then(data => {
-      console.log("Loaded CSV:", data);
+      console.log("Loaded 2 CSV:", data);
       this.setState({ csvNewData: data });
     });
   }
@@ -27,7 +27,7 @@ class App extends Component {
     <>
       <h1>Hello World</h1>
       <div className="chart-container">
-        <TestBar id="testchart" csvData={this.state.csvNewData} width={600} height={400} />
+        <TestBar id="testchart" csvData={this.state.csvNewData} width={800} height={600} />
         <GroupBar id='groupbar' csvData={this.state.csvData} width={700} height={600}  />
       </div>
     </>
