@@ -47,13 +47,14 @@ class MapChart extends Component{
                 .attr("stroke", "#333")
                 .attr("stroke-width", 1)
                 .on("mouseenter", function (event, d) {
+                    const centroid = path.centroid(d);
                     d3.select(this)
                         .raise() // bring to front
                         .transition()
                         .duration(200)
                         .attr("fill", "#ffcc00")
                         .attr("stroke-width", 2)
-                        .attr("transform", "scale(1.1)"); // enlarge
+                        .attr("transform", `translate(${centroid[0]},${centroid[1]}) scale(1.1) translate(${-centroid[0]},${-centroid[1]})`);// enlarge
                 })
                 .on("mouseleave", function (event, d) {
                     d3.select(this)
