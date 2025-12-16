@@ -14,7 +14,11 @@ class MapChart extends Component{
     }
     renderChart = () => {
         const chartData = this.props.csvData;
-        if (!chartData || chartData.length === 0) return;
+        console.log("MapChart renderChart called, data length:", chartData ? chartData.length : 0);
+        if (!chartData || chartData.length === 0) {
+            console.log("MapChart: No data available yet");
+            return;
+        }
 
         const margin = { top: 10, right: 10, bottom: 10, left: 10 };
         const width = this.props.width;
@@ -52,7 +56,9 @@ class MapChart extends Component{
             .style("font-size", "13px")
             .style("box-shadow", "0 4px 6px rgba(0,0,0,0.3)")
             .style("z-index", "1000");
-        d3.json("/us-states-with-ak-hi.geojson").then(geoData => {
+        d3.json(`${process.env.PUBLIC_URL}/us-states-with-ak-hi.geojson`)
+            .then(geoData => {
+            console.log("GeoJSON loaded successfully:", geoData);
             const projection = d3.geoAlbersUsa()
                 .fitSize([innerWidth, innerHeight], geoData);
 
@@ -147,6 +153,16 @@ class MapChart extends Component{
                         .duration(500)
                         .style("opacity", 0);
             });
+        })
+        .catch(error => {
+            console.error("Error loading GeoJSON:", error);
+            svg.append("text")
+                .attr("x", innerWidth / 2)
+                .attr("y", innerHeight / 2)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#ff0000")
+                .attr("font-size", "16px")
+                .text("Error loading map data. Check console for details.");
         });
     }
     render() {
