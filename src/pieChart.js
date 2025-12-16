@@ -4,8 +4,6 @@ import * as d3 from "d3";
 class PieChart extends Component{
     componentDidUpdate(){
     const chartData = this.props.csvData;
-    console.log("Rendering chart with data: this great");
-    // Don't render if data is empty
     if (!chartData || chartData.length === 0) {
         return;
     }
@@ -24,43 +22,60 @@ class PieChart extends Component{
         const innerWidth = width - margin.left - margin.right,
         innerHeight = height - margin.top - margin.bottom;
         const id =this.props.id;
+
+        d3.select(`#${id}`).selectAll("*").remove();
+
         const itemCounts = d3.rollup(
             chartData,
-            v => v.length,          // number of occurrences
-            d => d["Item Purchased"]
+            v => v.length,
+            d => d.Category
         );
         const pieData = Array.from(itemCounts, ([name, value]) => ({ name, value }));
-        const numofitem = [...new Set(chartData.map(d => d["Item Purchased"]))]
+        const categories = [...new Set(chartData.map(d => d.Category))];
         const color = d3.scaleOrdinal()
             .domain(pieData.map(d => d.name))
-            .range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), numofitem.length).reverse())
-        
+            .range(d3.schemeTableau10)
 
-        
-        // Create the pie layout and arc generator.
         const pie = d3.pie()
             .sort(null)
             .value(d => d.value);
-        
+
+        const radius = Math.min(width, height) / 2 - 60;
+
         const arc = d3.arc()
             .innerRadius(0)
-            .outerRadius(Math.min(width, height) / 2 - 1);
-        
-        const labelRadius = arc.outerRadius()() * 0.8;
+            .outerRadius(radius);
 
-        // A separate arc generator for labels.
+        const labelRadius = radius * 0.75;
+
         const arcLabel = d3.arc()
             .innerRadius(labelRadius)
             .outerRadius(labelRadius);
 
         const arcs = pie(pieData);
 
+        const tooltip = d3.select("body").append("div")
+            .attr("class", "pie-tooltip")
+            .style("position", "absolute")
+            .style("padding", "10px")
+            .style("background", "rgba(0, 0, 0, 0.85)")
+            .style("color", "#fff")
+            .style("border-radius", "6px")
+            .style("pointer-events", "none")
+            .style("opacity", 0)
+            .style("font-size", "13px")
+            .style("box-shadow", "0 4px 6px rgba(0,0,0,0.3)")
+            .style("z-index", "1000");
+
         const svg = d3.select(`#${id}`)
             .attr("width", width)
-            .attr("height", height)
+            .attr("height", height);
+
         const g = svg.append("g")
             .attr("transform", `translate(${width / 2}, ${height / 2})`);
-        // Add a sector path for each value.
+
+        const total = d3.sum(pieData, d => d.value);
+
         g.append("g")
             .attr("stroke", "white")
             .selectAll()
@@ -68,32 +83,92 @@ class PieChart extends Component{
             .join("path")
             .attr("fill", d => color(d.data.name))
             .attr("d", arc)
-            .append("title")
-            .text(d => `${d.data.name}: ${d.data.value}`);
+            .style("cursor", "pointer")
+            .on("mouseover", function(event, d) {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("opacity", 0.8)
+                    .attr("transform", "scale(1.05)");
 
-        // Create a new arc generator to place a label close to the edge.
-        // The label shows the value if there is enough room.
+                const percentage = ((d.data.value / total) * 100).toFixed(1);
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 1);
+
+                tooltip.html(`
+                    <strong>${d.data.name}</strong><br/>
+                    <strong>Count:</strong> ${d.data.value} items<br/>
+                    <strong>Percentage:</strong> ${percentage}%
+                `)
+                    .style("left", (event.pageX + 15) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mousemove", function(event) {
+                tooltip
+                    .style("left", (event.pageX + 15) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function() {
+                d3.select(this)
+                    .transition()
+                    .duration(200)
+                    .attr("opacity", 1)
+                    .attr("transform", "scale(1)");
+
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });
+
         g.append("g")
             .attr("text-anchor", "middle")
             .selectAll()
             .data(arcs)
             .join("text")
             .attr("transform", d => `translate(${arcLabel.centroid(d)})`)
-            .call(text => text.append("tspan")
-                .attr("y", "-0.4em")
-                .attr("font-weight", "bold")
-                .text(d => d.data.name))
-            .call(text => text.filter(d => (d.endAngle - d.startAngle) > 0.25).append("tspan")
-                .attr("x", 0)
-                .attr("y", "0.7em")
-                .attr("fill-opacity", 0.7)
-                .attr("font-size", 10)
-                .text(d => d.data.value.toLocaleString("en-US")));
+            .style("pointer-events", "none")
+            .each(function(d) {
+                const percentage = ((d.data.value / total) * 100).toFixed(1);
+                if ((d.endAngle - d.startAngle) > 0.15) {
+                    d3.select(this)
+                        .append("tspan")
+                        .attr("y", "0em")
+                        .attr("font-weight", "bold")
+                        .attr("font-size", "13px")
+                        .attr("fill", "#fff")
+                        .attr("stroke", "#000")
+                        .attr("stroke-width", "0.5px")
+                        .attr("paint-order", "stroke")
+                        .text(`${percentage}%`);
+                }
+            });
+
+        const legend = svg.append("g")
+            .attr("class", "legend")
+            .attr("transform", `translate(${width - 140}, 20)`);
+
+        const legendItems = legend.selectAll("g")
+            .data(pieData)
+            .join("g")
+            .attr("transform", (d, i) => `translate(0, ${i * 22})`);
+
+        legendItems.append("rect")
+            .attr("width", 16)
+            .attr("height", 16)
+            .attr("fill", d => color(d.name))
+            .attr("stroke", "#333")
+            .attr("stroke-width", 1);
+
+        legendItems.append("text")
+            .attr("x", 22)
+            .attr("y", 13)
+            .attr("font-size", "11px")
+            .attr("font-family", "'Times New Roman', Times, serif")
+            .text(d => d.name);
     }
     render() {
         return <svg id={this.props.id} width={this.props.width} height={this.props.height}><g></g></svg>;
-    } 
-    
-
+    }
 }
 export default PieChart;
